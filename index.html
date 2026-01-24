@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bíblia Duo - 2 Reis 1-13</title>
+    <!-- Configuração do Tailwind para Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                        }
+                    },
+                    animation: {
+                        'bounce-short': 'bounce-short 0.5s ease-in-out 1',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                    },
+                    keyframes: {
+                        'bounce-short': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        'shake': {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Nunito', sans-serif; 
+            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            overflow-x: hidden; 
+            color: #475569;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #cbd5e1;
+        }
+        
+        /* Botões 3D */
+        .btn-3d {
+            transition: all 0.1s;
+            transform: translateY(0);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+        .dark .btn-3d {
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0);
+        }
+
+        /* Estilos de Botões */
+        .btn-correct { background: #58cc02; border: 2px solid #58cc02; border-bottom: 4px solid #46a302; color: white; }
+        .btn-wrong { background: #ff4b4b; border: 2px solid #ff4b4b; border-bottom: 4px solid #ea2b2b; color: white; }
+        
+        .btn-neutral { 
+            background: white; border: 2px solid #e5e7eb; border-bottom: 4px solid #e5e7eb; color: #4b5563; 
+        }
+        .dark .btn-neutral {
+            background: #1e293b; border-color: #334155; border-bottom-color: #0f172a; color: #e2e8f0;
+        }
+        .btn-neutral:hover { background: #f9fafb; border-color: #d1d5db; border-bottom-color: #d1d5db; }
+        .dark .btn-neutral:hover { background: #334155; border-color: #475569; border-bottom-color: #1e293b; }
+
+        .btn-selected { 
+            background: #e0f2fe; border-color: #3b82f6; border-bottom-color: #2563eb; color: #1d4ed8; 
+        }
+        .dark .btn-selected {
+            background: #1e3a8a; border-color: #3b82f6; border-bottom-color: #1d4ed8; color: #93c5fd;
+        }
+
+        /* Mapa */
+        .path-node {
+            width: 80px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; cursor: pointer; position: relative; box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+            transition: transform 0.2s; z-index: 10;
+        }
+        .path-node:hover { transform: scale(1.1) translateY(-4px); }
+        .path-node:active { transform: scale(0.95) translateY(2px); box-shadow: 0 0 0; }
+        .path-line { width: 8px; height: 50px; background: #e5e7eb; margin: -5px auto; position: relative; z-index: 0; }
+        .dark .path-line { background: #334155; }
+
+        /* Animações */
+        .slide-in { animation: slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+
+        /* Componentes Específicos */
+        .verse-card { background: #fffbeb; border-left: 4px solid #f59e0b; font-family: 'Georgia', serif; }
+        .dark .verse-card { background: #451a03; color: #fcd34d; border-left-color: #d97706; }
+        
+        .progress-container { background: #e5e7eb; border-radius: 99px; height: 16px; }
+        .dark .progress-container { background: #334155; }
+        .progress-fill { background: #58cc02; height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+        
+        .dark .bg-white { background-color: #1e293b; color: #e2e8f0; }
+        .dark .text-slate-700 { color: #e2e8f0; }
+        .dark .text-slate-600 { color: #cbd5e1; }
+        .dark .text-slate-500 { color: #94a3b8; }
+        .dark .bg-slate-50 { background-color: #0f172a; }
+        .dark .bg-slate-100 { background-color: #334155; }
+        .dark .bg-slate-200 { background-color: #475569; }
+        
+        /* Modal Contexto Rico */
+        .context-highlight { background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #2563eb; }
+        .dark .context-highlight { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+    </style>
+</head>
+<body class="min-h-screen transition-colors duration-300">
+
+    <!-- Barra Superior -->
+    <nav class="bg-white dark:bg-slate-850 border-b-2 border-slate-200 dark:border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-sm transition-colors duration-300">
+        <div class="max-w-lg mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white font-black text-xl italic shadow-sm">B</div>
+                <span class="text-xl font-black text-slate-700 dark:text-slate-200 tracking-tight">BíbliaDuo</span>
+            </div>
+            <div class="flex gap-3 font-bold text-slate-500 dark:text-slate-400 items-center">
+                <button onclick="toggleDarkMode()" class="hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded-xl transition text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Alternar tema">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+                <button onclick="toggleAchievements()" class="hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded-xl transition relative">
+                    <i class="fas fa-trophy text-yellow-500 text-lg"></i>
+                    <span id="badge-notify" class="hidden absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                </button>
+                <div class="flex items-center gap-1">
+                    <i class="fas fa-fire text-orange-500"></i> <span id="xp-display">0</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <i class="fas fa-heart text-red-500"></i> <span id="hearts-display">5</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <main id="app-container" class="max-w-lg mx-auto pb-24 px-4 pt-6">
+        
+        <!-- VISUALIZAÇÃO DO MAPA -->
+        <div id="view-map" class="fade-in">
+            <div class="bg-green-500 dark:bg-green-600 text-white rounded-2xl p-6 mb-10 shadow-lg relative overflow-hidden transform transition hover:scale-[1.01]">
+                <div class="absolute -right-4 -top-4 text-green-400 dark:text-green-500 opacity-30 text-9xl">
+                    <i class="fas fa-book-bible"></i>
+                </div>
+                <h2 class="font-black text-xs uppercase tracking-widest opacity-80 mb-1">Unidade 1</h2>
+                <h1 class="text-2xl font-black leading-tight mb-2">A Sucessão e os Prodígios</h1>
+                <p class="text-green-100 text-sm font-semibold"><i class="fas fa-scroll mr-1"></i> 2 Reis 1-13</p>
+            </div>
+
+            <div class="flex flex-col items-center w-full space-y-2">
+                <!-- NÓS DO MAPA -->
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Acazias & Elias</span></div>
+                <div onclick="openLessonModal(0)" class="path-node bg-yellow-400 border-yellow-600 text-white btn-3d"><i class="fas fa-fire"></i></div>
+                <div class="path-line"></div>
+                
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">A Ascensão</span></div>
+                <div onclick="openLessonModal(1)" class="path-node bg-sky-400 border-sky-600 text-white btn-3d"><i class="fas fa-wind"></i></div>
+                <div class="path-line"></div>
+                
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Aliança & Água</span></div>
+                <div onclick="openLessonModal(2)" class="path-node bg-blue-500 border-blue-700 text-white btn-3d"><i class="fas fa-tint"></i></div>
+                <div class="path-line"></div>
+
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">A Sunamita</span></div>
+                <div onclick="openLessonModal(3)" class="path-node bg-pink-400 border-pink-600 text-white btn-3d"><i class="fas fa-child"></i></div>
+                <div class="path-line"></div>
+
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Naamã</span></div>
+                <div onclick="openLessonModal(4)" class="path-node bg-teal-400 border-teal-600 text-white btn-3d"><i class="fas fa-hands-bubbles"></i></div>
+                <div class="path-line"></div>
+
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Cerco de Samaria</span></div>
+                <div onclick="openLessonModal(5)" class="path-node bg-orange-400 border-orange-600 text-white btn-3d"><i class="fas fa-bread-slice"></i></div>
+                <div class="path-line"></div>
+
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Jeú</span></div>
+                <div onclick="openLessonModal(6)" class="path-node bg-red-500 border-red-700 text-white btn-3d"><i class="fas fa-skull"></i></div>
+                <div class="path-line"></div>
+
+                <div class="text-center"><span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wide">Legado Final</span></div>
+                <div onclick="openLessonModal(7)" class="path-node bg-purple-500 border-purple-700 text-white btn-3d"><i class="fas fa-crown"></i></div>
+            </div>
+        </div>
+
+        <!-- MODAL INÍCIO LIÇÃO -->
+        <div id="modal-choice" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl pop-in relative">
+                <button onclick="closeModalChoice()" class="absolute top-4 right-4 text-slate-300 hover:text-slate-500 dark:hover:text-slate-200 text-xl"><i class="fas fa-times"></i></button>
+                <div class="text-center mb-6">
+                    <h3 id="modal-lesson-title" class="text-2xl font-black text-slate-700 dark:text-white mb-1">Título</h3>
+                    <p id="modal-lesson-chapters" class="text-sm font-bold text-slate-400 uppercase tracking-wide">Capítulo X</p>
+                </div>
+                <div class="space-y-3">
+                    <button onclick="startPhase('study')" class="w-full py-4 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-book-open text-xl"></i> APRENDER
+                    </button>
+                    <button onclick="startPhase('challenge')" class="w-full py-4 bg-green-500 hover:bg-green-400 text-white font-bold rounded-xl border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-star text-xl"></i> DESAFIO
+                    </button>
+                    <button onclick="showContext()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 font-bold rounded-xl border-b-4 border-slate-300 dark:border-slate-900 active:border-b-0 active:translate-y-1 transition-all text-sm">
+                        <i class="fas fa-info-circle mr-1"></i> Contexto Bíblico
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL CONTEXTO -->
+        <div id="modal-context" class="hidden fixed inset-0 bg-black/60 z-[105] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl pop-in max-h-[80vh] overflow-y-auto">
+                <div class="flex items-center gap-3 mb-4 text-slate-700 dark:text-white">
+                    <i class="fas fa-scroll text-3xl text-blue-500"></i>
+                    <h3 class="text-2xl font-black">Contexto Histórico</h3>
+                </div>
+                <div id="context-content" class="prose text-slate-600 dark:text-slate-300 leading-relaxed mb-6"></div>
+                <button onclick="closeContext()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-1">ENTENDI</button>
+            </div>
+        </div>
+
+        <!-- MODAL CONQUISTAS -->
+        <div id="modal-achievements" class="hidden fixed inset-0 bg-black/60 z-[105] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl pop-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black text-yellow-500">Conquistas</h3>
+                    <button onclick="toggleAchievements()" class="text-slate-300 hover:text-slate-500"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div id="achievements-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
+            </div>
+        </div>
+
+        <!-- TELA DE LIÇÃO -->
+        <div id="view-lesson" class="hidden fixed inset-0 bg-white dark:bg-slate-900 z-[110] flex flex-col transition-colors duration-300">
+            <div class="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-850">
+                <button onclick="exitLessonConfirm()" class="text-slate-300 hover:text-slate-500 dark:hover:text-slate-200 transition text-2xl"><i class="fas fa-times"></i></button>
+                <div class="w-full max-w-xs mx-4">
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-fill w-0"></div>
+                    </div>
+                </div>
+                <div class="flex items-center text-red-500 font-bold gap-1">
+                    <i class="fas fa-heart"></i> <span id="lesson-hearts">5</span>
+                </div>
+            </div>
+
+            <div id="lesson-scroll" class="flex-1 overflow-y-auto p-4 flex flex-col items-center max-w-2xl mx-auto w-full">
+                <div id="lesson-content" class="w-full py-6"></div>
+            </div>
+
+            <div id="lesson-footer" class="border-t-2 border-slate-100 dark:border-slate-800 p-4 pb-8 bg-white dark:bg-slate-850 safe-area-bottom">
+                <div id="feedback-area" class="hidden mb-4 rounded-2xl p-4 flex items-start gap-3 animate-bounce-short">
+                    <div id="feedback-icon" class="text-3xl bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm"></div>
+                    <div>
+                        <h4 id="feedback-title" class="font-black text-lg mb-1"></h4>
+                        <p id="feedback-text" class="text-sm font-medium opacity-90"></p>
+                    </div>
+                </div>
+                <button id="btn-check" onclick="checkAnswer()" class="w-full py-4 bg-green-500 hover:bg-green-400 text-white font-bold rounded-2xl border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all text-lg uppercase tracking-wider">VERIFICAR</button>
+                <button id="btn-continue" onclick="nextStep()" class="hidden w-full py-4 bg-green-500 hover:bg-green-400 text-white font-bold rounded-2xl border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all text-lg uppercase tracking-wider">CONTINUAR</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // DADOS COMPLETOS E DETALHADOS
+        const achievements = [
+            { id: 'first_lesson', title: 'Primeiro Passo', description: 'Complete sua primeira lição', unlocked: false, icon: 'fa-shoe-prints' },
+            { id: 'fire_master', title: 'Mestre do Fogo', description: 'Aprenda sobre os capitães e o fogo do céu', unlocked: false, icon: 'fa-fire' },
+            { id: 'jordan_crosser', title: 'Cruzador do Jordão', description: 'Descubra a divisão das águas', unlocked: false, icon: 'fa-water' },
+            { id: 'miracle_worker', title: 'Fé Prática', description: 'Complete lições sobre os milagres de provisão', unlocked: false, icon: 'fa-hands-holding' },
+            { id: 'healing_river', title: 'Rio da Cura', description: 'Aprenda sobre a cura de Naamã', unlocked: false, icon: 'fa-star-of-life' },
+            { id: 'biblical_scholar', title: 'Estudioso Bíblico', description: 'Complete todas as 8 lições desta unidade', unlocked: false, icon: 'fa-graduation-cap' },
+            { id: 'challenge_master', title: 'Invencível', description: 'Complete um desafio sem perder vidas', unlocked: false, icon: 'fa-crown' },
+            { id: 'xp_collector', title: 'Lenda Viva', description: 'Alcance 500 pontos de experiência', unlocked: false, icon: 'fa-medal' }
+        ];
+
+        const lessons = [
+            {
+                id: 0, title: "O Rei e Baal-Zebube", chapters: "Cap 1", scripture: "2 Reis 1:1-18",
+                overview: "Acazias consulta Baal-Zebube após um acidente, e Elias profetiza sua morte. Dois capitães são consumidos por fogo do céu.",
+                study: [
+                    { t: "A Queda do Rei", i: "fa-crutch", details: "Após a morte de Acabe, Moabe se revoltou. Acazias caiu das grades de um quarto alto em Samaria e adoeceu gravemente.", verse: "E caiu Acazias pelas grades de um quarto alto..." },
+                    { t: "Consulta Proibida", i: "fa-spider", details: "Em desespero, Acazias enviou mensageiros a Baal-Zebube, deus de Ecrom (Senhor das Moscas), ignorando o Deus de Israel.", verse: "Ide e perguntai a Baal-Zebube... se sararei." },
+                    { t: "A Interceptação", i: "fa-user-slash", details: "Elias intercepta os mensageiros: 'Porventura não há Deus em Israel? Da cama que subiste não descerás.'", verse: "Por isso, assim diz o Senhor: Da cama... não descerás." },
+                    { t: "O Homem Peludo", i: "fa-tshirt", details: "O rei reconheceu Elias pela descrição: homem vestido de pelos com cinto de couro. Elias era inconfundível.", verse: "Era um homem vestido de pelos..." },
+                    { t: "Fogo do Céu", i: "fa-fire", details: "Dois capitães arrogantes tentaram prender Elias e foram consumidos por fogo. O terceiro humilhou-se e foi poupado.", verse: "Então, fogo desceu do céu e o consumiu..." },
+                    { t: "Sentença Final", i: "fa-skull", details: "Elias foi pessoalmente ao rei e repetiu a sentença. Acazias morreu conforme a palavra do Senhor.", verse: "Assim, pois, morreu, conforme a palavra do Senhor..." }
+                ],
+                challenge: [
+                    { q: "Qual deus pagão Acazias consultou?", o: ["Dagon", "Baal-Zebube", "Aserá", "Moloque"], a: 1, hint: "Senhor das Moscas, deus de Ecrom.", explanation: "Baal-Zebube era a divindade filisteia de Ecrom." },
+                    { q: "Quantos capitães morreram pelo fogo?", o: ["Um", "Dois", "Três", "Quatro"], a: 1, hint: "Apenas o terceiro sobreviveu.", explanation: "Os dois primeiros foram arrogantes e consumidos." },
+                    { q: "Como Elias se vestia?", o: ["Linho fino", "Armadura", "Pelos e couro", "Manto real"], a: 2, hint: "Rústico e ascético.", explanation: "Vestes de pelos e cinto de couro eram sua marca." },
+                    { q: "Onde o rei caiu?", o: ["No templo", "Na batalha", "Das grades do quarto", "Do cavalo"], a: 2, hint: "Um acidente doméstico.", explanation: "Ele caiu das grades de um quarto alto em Samaria." }
+                ]
+            },
+            {
+                id: 1, title: "A Partida de Elias", chapters: "Cap 2", scripture: "2 Reis 2:1-25",
+                overview: "Elias é elevado ao céu num redemoinho e Eliseu assume seu lugar com porção dobrada do espírito.",
+                study: [
+                    { t: "A Jornada Final", i: "fa-route", details: "Elias e Eliseu viajam de Gilgal a Betel, Jericó e Jordão. Eliseu recusa-se a deixar seu mestre.", verse: "Vive o Senhor... que te não deixarei." },
+                    { t: "Águas Divididas", i: "fa-water", details: "Elias fere o Jordão com sua capa e as águas se abrem. Eles passam em seco.", verse: "E feriu as águas, as quais se dividiram..." },
+                    { t: "O Pedido Ousado", i: "fa-hand-holding-heart", details: "Eliseu pede porção dobrada do espírito de Elias - a herança do filho primogênito espiritual.", verse: "Peço-te que haja porção dobrada..." },
+                    { t: "Carros de Fogo", i: "fa-wind", details: "Um carro de fogo os separa e Elias sobe ao céu num redemoinho. Eliseu grita: 'Meu pai, meu pai!'", verse: "Elias subiu ao céu num redemoinho." },
+                    { t: "O Novo Profeta", i: "fa-vest", details: "Eliseu pega a capa de Elias, fere o Jordão e as águas se abrem novamente. O espírito repousou nele.", verse: "O espírito de Elias repousa sobre Eliseu." },
+                    { t: "As Ursas", i: "fa-paw", details: "Jovens zombam de Eliseu ('Sobe, calvo!'). Duas ursas saem do bosque e ferem 42 deles.", verse: "Sobe, calvo, sobe, calvo!" }
+                ],
+                challenge: [
+                    { q: "O que Eliseu pediu a Elias?", o: ["Riqueza", "Poder político", "Porção dobrada do espírito", "Vida eterna"], a: 2, hint: "Herança espiritual.", explanation: "Ele queria ser o sucessor principal de Elias." },
+                    { q: "O que separou os profetas?", o: ["Um rio", "Um muro", "Carro de fogo", "Um exército"], a: 2, hint: "Veículo celestial.", explanation: "Carros e cavalos de fogo simbolizam o exército de Deus." },
+                    { q: "Qual foi o primeiro milagre de Eliseu sozinho?", o: ["Curar lepra", "Dividir o Jordão", "Ressuscitar", "Multiplicar azeite"], a: 1, hint: "Usou a capa de Elias.", explanation: "Ele abriu o Jordão para voltar a Israel." },
+                    { q: "Quantos jovens foram feridos pelas ursas?", o: ["12", "24", "42", "50"], a: 2, hint: "Um número específico.", explanation: "42 jovens zombadores foram despedaçados." }
+                ]
+            },
+            {
+                id: 2, title: "Aliança e Água", chapters: "Cap 3", scripture: "2 Reis 3:1-27",
+                overview: "Três reis se unem contra Moabe e quase morrem de sede até que Eliseu intervém.",
+                study: [
+                    { t: "A Revolta de Moabe", i: "fa-flag-checkered", details: "Mesa, rei de Moabe, parou de pagar tributos (100 mil cordeiros) a Israel após a morte de Acabe.", verse: "Revoltou-se o rei dos moabitas..." },
+                    { t: "A Aliança", i: "fa-handshake", details: "Jorão (Israel), Josafá (Judá) e o rei de Edom marcham pelo deserto para atacar Moabe.", verse: "Irás tu comigo à guerra?" },
+                    { t: "Sede no Deserto", i: "fa-tint-slash", details: "Após 7 dias, acabou a água. O rei de Israel se desesperou, mas Josafá pediu um profeta.", verse: "Não há aqui algum profeta do Senhor?" },
+                    { t: "Música e Poder", i: "fa-music", details: "Eliseu pediu um tangedor. Enquanto a música tocava, a mão do Senhor veio sobre ele.", verse: "Tangendo o tangedor, veio sobre ele a mão do Senhor." },
+                    { t: "O Milagre das Covas", i: "fa-trowel", details: "Sem chuva ou vento, o vale se encheu de água vinda de Edom pela manhã.", verse: "Fazei neste vale muitas covas." },
+                    { t: "Ilusão de Sangue", i: "fa-eye", details: "O sol refletiu na água vermelha. Os moabitas acharam que era sangue e atacaram desordenadamente.", verse: "Isto é sangue!" }
+                ],
+                challenge: [
+                    { q: "Qual era o tributo de Moabe?", o: ["Ouro", "Prata", "Animais (Ovelhas)", "Madeira"], a: 2, hint: "100 mil cordeiros.", explanation: "Mesa era contratador de gado." },
+                    { q: "O que Eliseu pediu antes de profetizar?", o: ["Silêncio", "Comida", "Um músico", "Dinheiro"], a: 2, hint: "Para acalmar o espírito.", explanation: "A música preparou o ambiente para a profecia." },
+                    { q: "Como a água chegou?", o: ["Chuva forte", "Do céu", "Pelo caminho de Edom (terra)", "Do rio Jordão"], a: 2, hint: "Não houve vento nem chuva.", explanation: "A água veio pela terra, enchendo as covas." }
+                ]
+            },
+            {
+                id: 3, title: "Azeite e Vida", chapters: "Cap 4", scripture: "2 Reis 4",
+                overview: "Eliseu multiplica o azeite de uma viúva e ressuscita o filho de uma mulher sunamita.",
+                study: [
+                    { t: "Dívida Mortal", i: "fa-file-invoice-dollar", details: "O credor queria levar os filhos da viúva como escravos. Ela clamou a Eliseu.", verse: "Veio o credor a levar-me os meus dois filhos." },
+                    { t: "Azeite Infinito", i: "fa-oil-can", details: "Com apenas uma botija, ela encheu todos os vasos emprestados dos vizinhos. O azeite só parou quando acabaram os vasos.", verse: "Não há mais vaso nenhum. Então o azeite parou." },
+                    { t: "A Sunamita", i: "fa-house-user", details: "Uma mulher rica de Suném fez um quarto para Eliseu. Ele prometeu a ela um filho.", verse: "Façamos-lhe, pois, um pequeno quarto..." },
+                    { t: "Morte do Menino", i: "fa-bed", details: "O menino cresceu, teve uma dor de cabeça forte e morreu no colo da mãe.", verse: "Ai! A minha cabeça!" },
+                    { t: "Fé Inabalável", i: "fa-person-walking", details: "Ela foi ao Carmelo buscar Eliseu e disse 'Tudo vai bem', escondendo a morte até chegar ao profeta.", verse: "Tudo vai bem." },
+                    { t: "Ressurreição", i: "fa-child", details: "Eliseu orou e se deitou sobre o menino. O corpo aqueceu, o menino espirrou 7 vezes e abriu os olhos.", verse: "O menino espirrou sete vezes." }
+                ],
+                challenge: [
+                    { q: "Quando o azeite parou de multiplicar?", o: ["Quando a viúva cansou", "Ao pôr do sol", "Quando acabaram os vasos", "Quando Eliseu mandou"], a: 2, hint: "Faltou recipiente.", explanation: "O milagre foi limitado apenas pela capacidade de receber." },
+                    { q: "O que a sunamita construiu para Eliseu?", o: ["Um altar", "Uma casa", "Um quarto", "Uma sinagoga"], a: 2, hint: "No muro da casa.", explanation: "Um quarto com cama, mesa e candeeiro." },
+                    { q: "Quantas vezes o menino espirrou?", o: ["3", "7", "10", "12"], a: 1, hint: "Número da perfeição.", explanation: "Sete espirros indicaram a vida plena voltando." }
+                ]
+            },
+            {
+                id: 4, title: "Naamã o Leproso", chapters: "Cap 5", scripture: "2 Reis 5",
+                overview: "Um general orgulhoso aprende que a obediência simples ao Deus de Israel vale mais que riquezas.",
+                study: [
+                    { t: "O General Doente", i: "fa-bacteria", details: "Naamã era herói na Síria, mas leproso. Uma menina escrava de Israel sugeriu o profeta.", verse: "Ele o restauraria da sua lepra." },
+                    { t: "A Instrução Simples", i: "fa-water", details: "Eliseu nem saiu de casa. Mandou dizer: 'Lava-te 7 vezes no Jordão'. Naamã ficou furioso.", verse: "Não são Abana e Farpar melhores?" },
+                    { t: "Humildade e Cura", i: "fa-soap", details: "Convencido pelos servos, Naamã obedeceu. Sua pele ficou limpa como a de um bebê.", verse: "A sua carne tornou, como a carne de um menino." },
+                    { t: "A Ganância de Geazi", i: "fa-coins", details: "Eliseu recusou presentes, mas Geazi correu atrás de Naamã e mentiu para ganhar prata.", verse: "Hei de correr atrás dele e tomar dele alguma coisa." },
+                    { t: "Consequência Terrível", i: "fa-disease", details: "Eliseu confrontou Geazi. A lepra de Naamã passou para Geazi e sua descendência.", verse: "Branco como a neve." }
+                ],
+                challenge: [
+                    { q: "Quem sugeriu procurar Eliseu?", o: ["O rei", "A esposa", "A menina cativa", "Um soldado"], a: 2, hint: "A menor da casa.", explanation: "A fé de uma criança escrava salvou o general." },
+                    { q: "Por que Naamã se irritou?", o: ["O rio era longe", "Esperava um ritual mágico", "Não tinha dinheiro", "Não gostava de água"], a: 1, hint: "Queria que o profeta tocasse nele.", explanation: "Ele esperava um show de poder, não uma ordem simples." },
+                    { q: "O que aconteceu com Geazi?", o: ["Ficou rico", "Morreu", "Ficou leproso", "Fugiu"], a: 2, hint: "A doença trocou de dono.", explanation: "Ele herdou a lepra de Naamã por sua ganância." }
+                ]
+            },
+            {
+                id: 5, title: "O Machado e o Cerco", chapters: "Cap 6-7", scripture: "2 Reis 6-7",
+                overview: "Milagres físicos e visão espiritual livram Israel dos sírios e da fome extrema.",
+                study: [
+                    { t: "Ferro Flutuante", i: "fa-hammer", details: "Um profeta perdeu um machado emprestado no rio. Eliseu jogou um pau e o ferro flutuou.", verse: "Fez nadar o ferro." },
+                    { t: "Espionagem Espiritual", i: "fa-user-secret", details: "Eliseu revelava ao rei de Israel os planos da Síria. O rei da Síria tentou capturá-lo em Dotã.", verse: "Não, ó rei... mas o profeta Eliseu faz saber." },
+                    { t: "Carros de Fogo", i: "fa-eye", details: "O servo de Eliseu temeu o exército sírio. Eliseu orou e o moço viu a montanha cheia de cavalos e carros de fogo.", verse: "Mais são os que estão conosco." },
+                    { t: "Fome Extrema", i: "fa-utensils", details: "Samaria foi cercada. A fome era tal que mães cozinhavam os próprios filhos. O rei culpou Eliseu.", verse: "Dá cá o teu filho, para que hoje o comamos." },
+                    { t: "A Profecia da Fartura", i: "fa-wheat", details: "Eliseu disse que no dia seguinte haveria comida barata. Um capitão duvidou e foi avisado que veria mas não comeria.", verse: "Amanhã, quase a este tempo..." },
+                    { t: "Os 4 Leprosos", i: "fa-running", details: "Leprosos desesperados foram ao arraial sírio e o acharam vazio. Deus fez os sírios ouvirem barulho de guerra e fugirem.", verse: "Este dia é dia de boas-novas." }
+                ],
+                challenge: [
+                    { q: "O que o servo viu quando seus olhos abriram?", o: ["Anjos", "Nada", "Carros de fogo", "O futuro"], a: 2, hint: "Proteção divina.", explanation: "Viu o exército celestial protegendo Eliseu." },
+                    { q: "Quem descobriu a fuga dos sírios?", o: ["O rei", "Os leprosos", "Eliseu", "Sentinelas"], a: 1, hint: "Eram excluídos da cidade.", explanation: "4 leprosos famintos foram os primeiros a saber." },
+                    { q: "O que aconteceu ao capitão que duvidou?", o: ["Comeu muito", "Foi promovido", "Morreu atropelado", "Fugiu"], a: 2, hint: "Viu mas não comeu.", explanation: "Foi atropelado pelo povo na porta da cidade." }
+                ]
+            },
+            {
+                id: 6, title: "A Fúria de Jeú", chapters: "Cap 8-10", scripture: "2 Reis 9-10",
+                overview: "Jeú é ungido para destruir a casa de Acabe e erradicar o culto a Baal de Israel.",
+                study: [
+                    { t: "A Unção Secreta", i: "fa-flask", details: "Eliseu manda ungir o capitão Jeú com a missão de destruir a casa de Acabe.", verse: "Ungi-te rei sobre o povo do Senhor." },
+                    { t: "Morte dos Reis", i: "fa-chess-king", details: "Jeú mata Jorão (rei de Israel) e Acazias (rei de Judá) no campo de Nabote.", verse: "A flecha lhe saiu pelo coração." },
+                    { t: "O Fim de Jezabel", i: "fa-crown", details: "Jezabel se maquiou e desafiou Jeú. Ela foi lançada da janela e cães comeram sua carne.", verse: "Os cães comerão a carne de Jezabel." },
+                    { t: "As Cabeças", i: "fa-box", details: "Os líderes de Samaria, com medo, decapitaram os 70 filhos de Acabe e mandaram as cabeças a Jeú.", verse: "Ponde-as em dois montões." },
+                    { t: "Armadilha para Baal", i: "fa-mask", details: "Jeú fingiu ser grande adorador de Baal, reuniu todos no templo e os matou, transformando o templo em latrina.", verse: "Acabe serviu pouco a Baal; Jeú muito o servirá." }
+                ],
+                challenge: [
+                    { q: "Como Jeú dirigia seu carro?", o: ["Lentamente", "Furiosamente", "Com medo", "Em pé"], a: 1, hint: "Sua marca registrada.", explanation: "Ele era conhecido pela condução louca." },
+                    { q: "Onde o corpo de Jezabel foi comido?", o: ["No palácio", "No campo de Jezreel", "Em Samaria", "No deserto"], a: 1, hint: "Conforme a profecia.", explanation: "No campo de Jezreel, onde Nabote foi morto." },
+                    { q: "O que Jeú fez com o templo de Baal?", o: ["Reformou", "Queimou", "Fez dele latrinas", "Fechou"], a: 2, hint: "Profanação total.", explanation: "Transformou em local de esgoto para desonrar o deus." }
+                ]
+            },
+            {
+                id: 7, title: "O Fim de Eliseu", chapters: "Cap 11-13", scripture: "2 Reis 11-13",
+                overview: "A preservação da linhagem de Davi e os últimos atos de poder de Eliseu.",
+                study: [
+                    { t: "Joás Escondido", i: "fa-baby", details: "A rainha má Atalia matou a família real, mas o bebê Joás foi escondido no Templo por 6 anos.", verse: "O teve escondido na Casa do Senhor." },
+                    { t: "O Golpe do Sacerdote", i: "fa-scroll", details: "O sacerdote Joiada coroou Joás aos 7 anos e executou Atalia, restaurando o trono de Davi.", verse: "Viva o rei!" },
+                    { t: "A Flecha da Vitória", i: "fa-bullseye", details: "No leito de morte, Eliseu mandou o rei Jeoás atirar flechas. O rei atirou, simbolizando vitória contra a Síria.", verse: "A flecha do livramento do Senhor." },
+                    { t: "Zelo Limitado", i: "fa-thermometer-quarter", details: "O rei só golpeou o chão 3 vezes. Eliseu se irritou: deveria ter golpeado 5 ou 6 para destruir a Síria totalmente.", verse: "Agora só três vezes ferirás os siros." },
+                    { t: "O Ossos de Eliseu", i: "fa-skull-crossbones", details: "Um ano depois, um cadáver jogado na cova de Eliseu tocou seus ossos e ressuscitou.", verse: "Reviveu e se levantou sobre os seus pés." }
+                ],
+                challenge: [
+                    { q: "Quantos anos Joás tinha ao reinar?", o: ["1", "7", "12", "20"], a: 1, hint: "Um rei criança.", explanation: "Começou a reinar aos 7 anos após ficar escondido." },
+                    { q: "Por que Eliseu se irritou com Jeoás?", o: ["Não atirou", "Errou o alvo", "Bateu poucas vezes", "Quebrou o arco"], a: 2, hint: "Faltou perseverança.", explanation: "Ele limitou sua própria vitória ao bater só 3 vezes." },
+                    { q: "O que o milagre dos ossos mostra?", o: ["Sorte", "Poder de Deus residual", "Magia", "Nada"], a: 1, hint: "A unção permanecia.", explanation: "O poder de Deus operava em Eliseu mesmo após a morte." }
+                ]
+            }
+        ];
+
+        // --- ESTADO E LÓGICA ---
+        let currentLesson = null;
+        let currentStep = 0;
+        let phase = 'study';
+        let hearts = 5;
+        let xp = 0;
+        let selectedOption = null;
+        let lessonsCompleted = new Array(lessons.length).fill(false);
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+            }
+        });
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            
+            html.classList.toggle('dark');
+            body.classList.toggle('dark');
+            
+            if (html.classList.contains('dark')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.theme = 'dark';
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.theme = 'light';
+            }
+        }
+
+        function toggleAchievements() {
+            const modal = document.getElementById('modal-achievements');
+            const list = document.getElementById('achievements-list');
+            
+            if (modal.classList.contains('hidden')) {
+                list.innerHTML = achievements.map(ach => `
+                    <div class="flex items-center gap-4 p-3 rounded-xl border-b border-slate-100 dark:border-slate-700 ${ach.unlocked ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'opacity-50'}">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl ${ach.unlocked ? 'bg-yellow-400 text-white shadow-md' : 'bg-slate-200 dark:bg-slate-700 text-slate-400'}">
+                            <i class="fas ${ach.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-200">${ach.title}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">${ach.description}</p>
+                        </div>
+                        ${ach.unlocked ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-lock text-slate-300"></i>'}
+                    </div>
+                `).join('');
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function unlockAchievement(id) {
+            const ach = achievements.find(a => a.id === id);
+            if (ach && !ach.unlocked) {
+                ach.unlocked = true;
+                const badge = document.getElementById('badge-notify');
+                badge.classList.remove('hidden');
+                setTimeout(() => badge.classList.add('hidden'), 3000);
+            }
+        }
+
+        function openLessonModal(id) {
+            currentLesson = lessons[id];
+            document.getElementById('modal-lesson-title').innerText = currentLesson.title;
+            document.getElementById('modal-lesson-chapters').innerText = currentLesson.chapters;
+            document.getElementById('modal-choice').classList.remove('hidden');
+        }
+
+        function closeModalChoice() {
+            document.getElementById('modal-choice').classList.add('hidden');
+        }
+
+        function showContext() {
+            const ctx = document.getElementById('modal-context');
+            document.getElementById('context-content').innerHTML = `
+                <div class="space-y-4">
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                        <h4 class="font-bold text-blue-700 dark:text-blue-300 mb-2"><i class="fas fa-info-circle mr-2"></i>Resumo</h4>
+                        <p>${currentLesson.overview}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-white mb-2">Contexto Histórico</h4>
+                        <p>O Reino do Norte (Israel) vivia sob a dinastia de Onri e Acabe, marcada pela idolatria a Baal. Os profetas Elias e Eliseu foram levantados por Deus não apenas para pregar, mas para demonstrar poder superior aos falsos deuses através de milagres e controle sobre a natureza e a política.</p>
+                    </div>
+                    <div class="p-3 border-l-4 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10">
+                        <p class="text-sm italic">"A sucessão de Elias para Eliseu marca a transição de um ministério de confronto (fogo) para um de misericórdia e milagres (graça), embora o julgamento ainda estivesse presente."</p>
+                    </div>
+                </div>
+            `;
+            ctx.classList.remove('hidden');
+        }
+
+        function closeContext() {
+            document.getElementById('modal-context').classList.add('hidden');
+        }
+
+        function startPhase(p) {
+            phase = p;
+            currentStep = 0;
+            closeModalChoice();
+            document.getElementById('view-map').classList.add('hidden');
+            document.getElementById('view-lesson').classList.remove('hidden');
+            renderLessonStep();
+        }
+
+        function renderLessonStep() {
+            const content = document.getElementById('lesson-content');
+            const feedback = document.getElementById('feedback-area');
+            const btnCheck = document.getElementById('btn-check');
+            const btnCont = document.getElementById('btn-continue');
+            
+            feedback.classList.add('hidden');
+            btnCheck.classList.remove('hidden');
+            btnCont.classList.add('hidden');
+            selectedOption = null;
+            
+            const total = phase === 'study' ? currentLesson.study.length : currentLesson.challenge.length;
+            const pct = ((currentStep) / total) * 100;
+            document.querySelector('.progress-fill').style.width = pct + '%';
+
+            if (phase === 'study') {
+                const item = currentLesson.study[currentStep];
+                btnCheck.innerText = "ENTENDI";
+                content.innerHTML = `
+                    <div class="slide-in flex flex-col items-center text-center space-y-6">
+                        <div class="w-32 h-32 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-6xl text-blue-500 dark:text-blue-400 shadow-inner mb-4">
+                            <i class="fas ${item.i}"></i>
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-700 dark:text-white">${item.t}</h2>
+                        <p class="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">${item.details}</p>
+                        <div class="verse-card p-4 rounded-xl mt-4 w-full text-left shadow-sm">
+                            <p class="text-amber-800 dark:text-amber-400 italic text-sm font-medium"><i class="fas fa-quote-left mr-2 opacity-50"></i>${item.verse}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const item = currentLesson.challenge[currentStep];
+                btnCheck.innerText = "VERIFICAR";
+                content.innerHTML = `
+                    <div class="slide-in w-full max-w-md">
+                        <h2 class="text-xl font-bold text-slate-700 dark:text-white mb-6">${item.q}</h2>
+                        <div class="space-y-3">
+                            ${item.o.map((opt, i) => `
+                                <button onclick="selectOption(${i})" id="opt-${i}" class="btn-neutral w-full p-4 rounded-xl text-left font-bold text-slate-600 dark:text-slate-300 btn-3d transition-all flex items-center justify-between group">
+                                    <span>${opt}</span>
+                                    <div class="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-slate-300 dark:group-hover:border-slate-500"></div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function selectOption(idx) {
+            if (!document.getElementById('feedback-area').classList.contains('hidden')) return;
+            selectedOption = idx;
+            document.querySelectorAll('#lesson-content button').forEach(b => {
+                b.classList.remove('btn-selected');
+                b.classList.add('btn-neutral');
+            });
+            const btn = document.getElementById(`opt-${idx}`);
+            btn.classList.remove('btn-neutral');
+            btn.classList.add('btn-selected');
+        }
+
+        function checkAnswer() {
+            if (phase === 'study') {
+                nextStep();
+                return;
+            }
+            if (selectedOption === null) return;
+
+            const item = currentLesson.challenge[currentStep];
+            const feedback = document.getElementById('feedback-area');
+            const fbTitle = document.getElementById('feedback-title');
+            const fbText = document.getElementById('feedback-text');
+            const fbIcon = document.getElementById('feedback-icon');
+            const btnCheck = document.getElementById('btn-check');
+            const btnCont = document.getElementById('btn-continue');
+
+            btnCheck.classList.add('hidden');
+            btnCont.classList.remove('hidden');
+            feedback.classList.remove('hidden');
+
+            const correctBtn = document.getElementById(`opt-${item.a}`);
+            const selectedBtn = document.getElementById(`opt-${selectedOption}`);
+
+            if (selectedOption === item.a) {
+                feedback.className = "mb-4 rounded-2xl p-4 flex items-start gap-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 animate-bounce-short";
+                fbIcon.innerHTML = '<i class="fas fa-check"></i>';
+                fbIcon.className = "text-2xl bg-white dark:bg-slate-800 text-green-500 rounded-full w-10 h-10 flex items-center justify-center shadow-sm";
+                fbTitle.innerText = "Incrível!";
+                fbText.innerText = "Resposta correta!";
+                selectedBtn.classList.remove('btn-selected');
+                selectedBtn.classList.add('btn-correct');
+                xp += 10;
+                updateUI();
+            } else {
+                feedback.className = "mb-4 rounded-2xl p-4 flex items-start gap-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 animate-shake";
+                fbIcon.innerHTML = '<i class="fas fa-times"></i>';
+                fbIcon.className = "text-2xl bg-white dark:bg-slate-800 text-red-500 rounded-full w-10 h-10 flex items-center justify-center shadow-sm";
+                fbTitle.innerText = "Solução Correta:";
+                fbText.innerText = `${item.o[item.a]} - ${item.explanation}`;
+                selectedBtn.classList.remove('btn-selected');
+                selectedBtn.classList.add('btn-wrong');
+                correctBtn.classList.remove('btn-neutral');
+                correctBtn.classList.add('btn-correct');
+                hearts--;
+                updateUI();
+                if (hearts <= 0) {
+                    alert("Seus corações acabaram! Revise o material.");
+                    exitLesson();
+                    hearts = 5;
+                    updateUI();
+                }
+            }
+        }
+
+        function nextStep() {
+            const total = phase === 'study' ? currentLesson.study.length : currentLesson.challenge.length;
+            
+            if (currentStep < total - 1) {
+                currentStep++;
+                renderLessonStep();
+            } else {
+                if (phase === 'challenge') {
+                    if (!lessonsCompleted[currentLesson.id]) {
+                        lessonsCompleted[currentLesson.id] = true;
+                        xp += 50;
+                        unlockAchievement('first_lesson');
+                        if (currentLesson.id === 0) unlockAchievement('fire_master');
+                        if (currentLesson.id === 1) unlockAchievement('jordan_crosser');
+                        if (currentLesson.id === 2 || currentLesson.id === 3) unlockAchievement('miracle_worker');
+                        if (currentLesson.id === 4) unlockAchievement('healing_river');
+                        if (lessonsCompleted.every(l => l)) unlockAchievement('biblical_scholar');
+                    }
+                    if (hearts === 5) unlockAchievement('challenge_master');
+                } else {
+                    xp += 20;
+                }
+                
+                if (xp >= 500) unlockAchievement('xp_collector');
+                
+                alert(phase === 'study' ? "Leitura concluída! +20 XP" : "Desafio vencido! +50 XP");
+                updateUI();
+                exitLesson();
+            }
+        }
+
+        function exitLesson() {
+            document.getElementById('view-map').classList.remove('hidden');
+            document.getElementById('view-lesson').classList.add('hidden');
+        }
+
+        function exitLessonConfirm() {
+            if(confirm("Sair agora perderá o progresso desta lição.")) {
+                exitLesson();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('xp-display').innerText = xp;
+            document.getElementById('hearts-display').innerText = hearts;
+            document.getElementById('lesson-hearts').innerText = hearts;
+        }
+    </script>
+</body>
+</html>
